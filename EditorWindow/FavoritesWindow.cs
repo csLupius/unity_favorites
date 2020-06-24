@@ -1,17 +1,12 @@
-﻿using I2.Loc.SimpleJSON;
-using Mono.CecilX.Cil;
-using Newtonsoft.Json;
+﻿
+//using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
-using System.Reflection.Emit;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
-using Valve.VR.InteractionSystem;
 
 [Serializable]
 public class FavoriteObject
@@ -83,7 +78,7 @@ public class FavoritesWindow : EditorWindow
 
         if (System.IO.File.Exists(PersDatPat + "/Dev-Favorites.json"))
         {
-            myList = JsonConvert.DeserializeObject<FavoriteObject[]>(File.ReadAllText(PersDatPat + "/Dev-Favorites.json")).ToList();
+            myList = JsonUtility.FromJson<FavoriteObject[]>(File.ReadAllText(PersDatPat + "/Dev-Favorites.json")).ToList();
 
         }
         else myList = new List<FavoriteObject>();
@@ -98,21 +93,21 @@ public class FavoritesWindow : EditorWindow
     {
         Repaint();
         myList.Add(@object);
-        var jsonstring = JsonConvert.SerializeObject(myList.ToArray(), Formatting.Indented);
+        var jsonstring = JsonUtility.ToJson(myList.ToArray());
         System.IO.File.WriteAllText(PersDatPat + "/Dev-Favorites.json", jsonstring);
     }
     public void RemoveFromFavorite(FavoriteObject @object)
     {
         var i = myList.FindIndex(x => x.ID == @object.ID);
         myList.RemoveAt(i);
-        var jsonstring = JsonConvert.SerializeObject(myList.ToArray(), Formatting.Indented);
+        var jsonstring = JsonUtility.ToJson(myList.ToArray());
         System.IO.File.WriteAllText(PersDatPat + "/Dev-Favorites.json", jsonstring);
     }
 
 
     public bool InFavorites(FavoriteObject @object)
     {
-        var res =  myList.Any(x => x.ID == @object.ID);
+        var res = myList.Any(x => x.ID == @object.ID);
         Debug.Log(res ? "Var" : "Yok");
         return res;
     }
@@ -129,7 +124,7 @@ public class FavoritesWindow : EditorWindow
     void RemoveFromFavorites(int i)
     {
         myList.RemoveAt(i);
-        var jsonstring = JsonConvert.SerializeObject(myList.ToArray(), Formatting.Indented);
+        var jsonstring = JsonUtility.ToJson(myList.ToArray());
         System.IO.File.WriteAllText(PersDatPat + "/Dev-Favorites.json", jsonstring);
     }
     GenericMenu CreateMenu()
